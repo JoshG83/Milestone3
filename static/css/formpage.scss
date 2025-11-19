@@ -79,8 +79,10 @@ a {
   }
 }
 
-.tab-content > div:last-child {
-  display: none;
+/* Ensure tab content is visible; original rule hid the last tab which
+   became the only tab after template edits. Display all tab panes by default. */
+.tab-content > div {
+  display: block;
 }
 
 h1 {
