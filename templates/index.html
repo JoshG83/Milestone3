@@ -1,12 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enhanced Scheduling System</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Form Page</title>
+  <link rel="stylesheet" href="/static/css/formpage.css" />
 </head>
 <body>
-    <h1>Welcome to the Enhanced Scheduling System</h1>
-    <p>This is a basic Flask app with an HTML template.</p>
+
+<div class="form">
+      
+      
+      <div class="tab-content">
+        <div id="signup">   
+          <h1>UKG Enhanced Scheduling System</h1>
+          
+          <form action="/" method="post">
+
+          <div class="field-wrap">
+            <label>
+              Employee ID<span class="req">*</span>
+            </label>
+            <input name="employee_id" type="number" required autocomplete="off" />
+          </div>
+
+          <button type="submit" class="button button-block">Sign In</button>
+
+          </form>
+
+        </div>
+        
+      </div><!-- tab-content -->
+      
+</div> <!-- /form -->
+
+<script src="/static/js/formpage.js"></script>
 </body>
 </html>
