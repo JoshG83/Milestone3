@@ -2,6 +2,8 @@ import os
 from flask import Flask, render_template
 import sass
 
+## We need to import Flask and SASS in order for our web app to work.
+
 app = Flask(__name__)
 
 def compile_scss_if_needed():

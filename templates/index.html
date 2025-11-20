@@ -1,3 +1,7 @@
+<!--/* We are defining the structure of our HTML page for the UKG Enhanced Scheduling System.
+/* Ideally, we want the structure to be very simple and easy for both the employees and managers to navigate.
+/* In this first section, we begin with rudamentary HTML headers to begin our webpage.-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +11,7 @@
   <link rel="stylesheet" href="/static/css/formpage.css" />
 </head>
 <body>
+
 
 <div class="form">
       
@@ -21,7 +26,11 @@
             <label>
               Employee ID<span class="req">*</span>
             </label>
-            <input name="employee_id" type="number" required autocomplete="off" />
+            <input id="employee_id"
+                   name="employee_id" 
+                   type="number" 
+                   inputmode="numeric"
+                   required />
           </div>
 
           <button type="submit" class="button button-block">Sign In</button>

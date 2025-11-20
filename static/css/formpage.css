@@ -9,7 +9,7 @@ html {
 }
 
 body {
-  background: #c1bdba;
+  background: #2c2a29;
   font-family: "Titillium Web", sans-serif;
 }
 
@@ -188,4 +188,23 @@ textarea {
 .forgot {
   margin-top: -20px;
   text-align: right;
+}
+
+/* For WebKit-based browsers (Chrome, Safari, Edge, Opera) */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none; /* standard */
+    margin: 0; /* Optional: removes any default margin */
+}
+
+/* For Firefox & standard */
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield;      /* standard (or use 'none' to remove all native styling) */
+}
+
+/* For general compatibility (though the above cover most cases) */
+input[type=number] {
+    appearance: textfield;
 }
