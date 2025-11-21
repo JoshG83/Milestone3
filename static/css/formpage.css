@@ -3,26 +3,8 @@
     colors and other stylizations, which then create a CSS file that is read by the HTML/Python
     application. The only file that ever needs changing is the SCSS file, and the CSS file should not be touched.
 */
-
-$body-bg: #292522;
-$form-bg: #13232f;
-$white: #ffffff;
-
-$main: #1ab188;
-$main-light: lighten($main, 5%);
-$main-dark: darken($main, 5%);
-
-$gray-light: #a0b3b0;
-$gray: #ddd;
-
-$thin: 300;
-$normal: 400;
-$bold: 600;
-$br: 4px;
-
 /* This begins the stylization of the HTML scheduling page, in terms of font size, font type, and page layout.
    Being SCSS, we can use what we entered above as functions or defniitions that we later reuse in our code */
-
 *,
 *:before,
 *:after {
@@ -34,58 +16,63 @@ html {
 }
 
 body {
-  background: $body-bg;
+  background: #292522;
   font-family: "Titillium Web", sans-serif;
 }
 
 a {
   text-decoration: none;
-  color: $main;
+  color: #1ab188;
   transition: 0.5s ease;
-  &:hover {
-    color: $main-dark;
-  }
+}
+
+a:hover {
+  color: #179b77;
 }
 
 .form {
-  background: rgba($form-bg, 0.9);
+  background: rgba(19, 35, 47, 0.9);
   padding: 40px;
   max-width: 600px;
   margin: 40px auto;
-  border-radius: $br;
-  box-shadow: 0 4px 10px 4px rgba($form-bg, 0.3);
+  border-radius: 4px;
+  box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
 }
 
 .tab-group {
   list-style: none;
   padding: 0;
   margin: 0 0 40px 0;
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-  li a {
-    display: block;
-    text-decoration: none;
-    padding: 15px;
-    background: rgba($gray-light, 0.25);
-    color: $gray-light;
-    font-size: 20px;
-    float: left;
-    width: 50%;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.5s ease;
-    &:hover {
-      background: $main-dark;
-      color: $white;
-    }
-  }
-  .active a {
-    background: $main;
-    color: $white;
-  }
+}
+
+.tab-group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.tab-group li a {
+  display: block;
+  text-decoration: none;
+  padding: 15px;
+  background: rgba(160, 179, 176, 0.25);
+  color: #a0b3b0;
+  font-size: 20px;
+  float: left;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.tab-group li a:hover {
+  background: #179b77;
+  color: #ffffff;
+}
+
+.tab-group .active a {
+  background: #1ab188;
+  color: #ffffff;
 }
 
 /* Ensure tab content is visible; original rule hid the last tab which
@@ -96,8 +83,8 @@ a {
 
 h1 {
   text-align: center;
-  color: $white;
-  font-weight: $thin;
+  color: #ffffff;
+  font-weight: 300;
   margin: 0 0 40px;
 }
 
@@ -105,29 +92,31 @@ label {
   position: absolute;
   transform: translateY(6px);
   left: 13px;
-  color: rgba($white, 0.5);
+  color: rgba(255, 255, 255, 0.5);
   transition: all 0.25s ease;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   pointer-events: none;
   font-size: 22px;
-  .req {
-    margin: 2px;
-    color: $main;
-  }
+}
+
+label .req {
+  margin: 2px;
+  color: #1ab188;
 }
 
 label.active {
   transform: translateY(50px);
   left: 2px;
   font-size: 14px;
-  .req {
-    opacity: 0;
-  }
+}
+
+label.active .req {
+  opacity: 0;
 }
 
 label.highlight {
-  color: $white;
+  color: #ffffff;
 }
 
 input,
@@ -139,14 +128,16 @@ textarea {
   padding: 5px 10px;
   background: none;
   background-image: none;
-  border: 1px solid $gray-light;
-  color: $white;
+  border: 1px solid #a0b3b0;
+  color: #ffffff;
   border-radius: 0;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
-  &:focus {
-    outline: 0;
-    border-color: $main;
-  }
+}
+
+input:focus,
+textarea:focus {
+  outline: 0;
+  border-color: #1ab188;
 }
 
 /* Remove native number input spin buttons (cross-browser) */
@@ -154,18 +145,20 @@ textarea {
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  appearance: none; /* standard */
+  appearance: none;
+  /* standard */
   margin: 0;
 }
 
 /* Firefox */
 input[type="number"] {
-  -moz-appearance: textfield; /* keep the textfield look */
+  -moz-appearance: textfield;
+  /* keep the textfield look */
   appearance: textfield;
 }
 
 textarea {
-  border: 2px solid $gray-light;
+  border: 2px solid #a0b3b0;
   resize: vertical;
 }
 
@@ -174,21 +167,20 @@ textarea {
   margin-bottom: 40px;
 }
 
-.top-row {
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
+.top-row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
 
-  > div {
-    float: left;
-    width: 48%;
-    margin-right: 4%;
-    &:last-child {
-      margin: 0;
-    }
-  }
+.top-row > div {
+  float: left;
+  width: 48%;
+  margin-right: 4%;
+}
+
+.top-row > div:last-child {
+  margin: 0;
 }
 
 .button {
@@ -197,19 +189,19 @@ textarea {
   border-radius: 0;
   padding: 15px 0;
   font-size: 2rem;
-  font-weight: $bold;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  background: $main;
-  color: $white;
-  transition: all.5s ease;
+  background: #1ab188;
+  color: #ffffff;
+  transition: all 0.5s ease;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  &:hover,
-  &:focus {
-    background: $main-dark;
-  }
+}
+
+.button:hover, .button:focus {
+  background: #179b77;
 }
 
 .button-block {
