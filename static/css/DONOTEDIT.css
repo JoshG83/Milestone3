@@ -1,8 +1,5 @@
 /* We use CSS and SCSS to format our website that is easy on the eyes and allows both employees and managers
-    to navigate the interface. Using SCSS makes it easier for us to define certain functions for
-    colors and other stylizations, which then create a CSS file that is read by the HTML/Python
-    application. The only file that ever needs changing is the SCSS file, and the CSS file should not be touched.
-*/
+    to navigate the interface. */
 /* This begins the stylization of the HTML scheduling page, in terms of font size, font type, and page layout.
    Being SCSS, we can use what we entered above as functions or defniitions that we later reuse in our code */
 *,
@@ -138,23 +135,6 @@ input:focus,
 textarea:focus {
   outline: 0;
   border-color: #1ab188;
-}
-
-/* Remove native number input spin buttons (cross-browser) */
-/* WebKit browsers */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  appearance: none;
-  /* standard */
-  margin: 0;
-}
-
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
-  /* keep the textfield look */
-  appearance: textfield;
 }
 
 textarea {

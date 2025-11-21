@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PTO Request</title>
+  <link rel="stylesheet" href="/static/css/formpage.css" />
+</head>
+<body>
+<div class="form">
+  <h1>PTO Request</h1>
+  <p>Signed in as: <strong>{{ employee_name }}</strong> (<a href="{{ url_for('logout') }}">Sign out</a>)</p>
+
+  {% if error %}
+    <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">{{ error }}</p>
+  {% endif %}
+  {% if success %}
+    <p style="color:#ddffdd; background:#116611; padding:8px; border-radius:4px;">{{ success }}</p>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('pto') }}">
+    <div class="field-wrap">
+      <label>Start Date</label>
+      <input name="start_date" type="date" required />
+    </div>
+    <div class="field-wrap">
+      <label>End Date</label>
+      <input name="end_date" type="date" required />
+    </div>
+    <div class="field-wrap">
+      <label>Reason</label>
+      <textarea name="reason"></textarea>
+    </div>
+    <button type="submit" class="button button-block">Submit PTO Request</button>
+  </form>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/static/js/formpage.js"></script>
+</body>
+</html>
