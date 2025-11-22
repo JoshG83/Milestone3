@@ -101,6 +101,12 @@ h1 {
   margin: 0 0 40px;
 }
 
+/* Employee name on PTO page */
+.employee-name {
+  color: $white;
+  font-weight: $bold;
+}
+
 label {
   position: absolute;
   transform: translateY(6px);
@@ -167,6 +173,28 @@ input[type="number"] {
 textarea {
   border: 2px solid $gray-light;
   resize: vertical;
+}
+
+/* Remove browser placeholder like 'mm/dd/yyyy' but keep entered date visible.
+   Works by making the date input text color transparent when empty, and restoring
+   color when the field is focused or valid (we keep Start/End date required in the form). */
+input[type="date"] {
+  color: transparent;
+}
+
+/* WebKit-specific date-edit parts */
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: transparent;
+}
+
+/* Restore visible color when focused or when the field has a valid value */
+input[type="date"]:focus,
+input[type="date"]:valid {
+  color: $white;
 }
 
 .field-wrap {
