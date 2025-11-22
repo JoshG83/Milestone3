@@ -32,13 +32,18 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  // Simple client-side submit handling for demo
+  // Simple client-side submit handling for demo-only forms
+  // If a form has the attribute `data-demo`, intercept submit and show an alert.
+  // Otherwise allow normal form submission to the server (sign-in and PTO forms).
   const forms = document.querySelectorAll('form');
   forms.forEach((form) => {
     form.addEventListener('submit', (e) => {
+      const isDemo = form.hasAttribute('data-demo');
+      if (!isDemo) return; // allow actual submit for non-demo forms
+
       e.preventDefault(); // prevent actual submit in demo
       const data = Array.from(new FormData(form).entries())
-        .map(([k,v]) => `${k}: ${v}`)
+        .map(([k, v]) => `${k}: ${v}`)
         .join('\n');
       alert('Form submitted (demo)\n\n' + data);
     });
