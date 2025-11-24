@@ -287,3 +287,19 @@ input[type="date"]:valid {
   margin-top: -20px;
   text-align: right;
 }
+
+// Remove or comment out this if you added it globally:
+// input,
+// input[type="text"],
+// input[type="number"],
+// input[type="email"],
+// input[type="password"] {
+//   color: #ffffff !important;
+//   -webkit-text-fill-color: #ffffff !important;
+// }
+
+// Instead, target ONLY the login Employee ID field
+.employee-id-input {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important; // handle autofill
+}
