@@ -107,6 +107,15 @@ h1 {
   font-weight: $bold;
 }
 
+/* Ensure paragraph text inside the form is visible on dark background,
+   but keep anchor links their accent color. */
+.form p {
+  color: $white;
+}
+.form p a {
+  color: $main;
+}
+
 label {
   position: absolute;
   transform: translateY(6px);
@@ -123,10 +132,18 @@ label {
   }
 }
 
-label.active {
-  transform: translateY(50px);
+/* When a field is active (has focus or content), hide the label completely
+   so it doesn't overlap with the input/textarea. We animate opacity for a
+   smooth transition. */
+label.active,
+label.highlight {
+  transform: translateY(-6px);
   left: 2px;
   font-size: 14px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
   .req {
     opacity: 0;
   }
