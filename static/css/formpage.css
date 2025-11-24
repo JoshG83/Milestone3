@@ -281,3 +281,8 @@ input[type="date"]:valid {
   margin-top: -20px;
   text-align: right;
 }
+
+.employee-id-input {
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff !important;
+}
