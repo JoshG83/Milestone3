@@ -165,6 +165,27 @@ textarea:focus {
   border-color: #1ab188;
 }
 
+/* Fix browser autofill styling (Chrome / Safari / Firefox) which can change
+   the input text color (e.g. show green text). Force white text and remove
+   the yellow/green autofill background. */
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:hover {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset !important;
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+}
+
+/* Firefox autofill */
+input:-moz-autofill,
+textarea:-moz-autofill {
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+  -moz-text-fill-color: #ffffff !important;
+}
+
 /* Remove native number input spin buttons (cross-browser) */
 /* WebKit browsers */
 input[type="number"]::-webkit-outer-spin-button,
