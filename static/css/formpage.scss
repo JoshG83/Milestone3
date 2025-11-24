@@ -101,6 +101,21 @@ h1 {
   margin: 0 0 40px;
 }
 
+/* Employee name on PTO page */
+.employee-name {
+  color: $white;
+  font-weight: $bold;
+}
+
+/* Ensure paragraph text inside the form is visible on dark background,
+   but keep anchor links their accent color. */
+.form p {
+  color: $white;
+}
+.form p a {
+  color: $main;
+}
+
 label {
   position: absolute;
   transform: translateY(6px);
@@ -117,10 +132,18 @@ label {
   }
 }
 
-label.active {
-  transform: translateY(50px);
+/* When a field is active (has focus or content), hide the label completely
+   so it doesn't overlap with the input/textarea. We animate opacity for a
+   smooth transition. */
+label.active,
+label.highlight {
+  transform: translateY(-6px);
   left: 2px;
   font-size: 14px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
   .req {
     opacity: 0;
   }
@@ -167,6 +190,28 @@ input[type="number"] {
 textarea {
   border: 2px solid $gray-light;
   resize: vertical;
+}
+
+/* Remove browser placeholder like 'mm/dd/yyyy' but keep entered date visible.
+   Works by making the date input text color transparent when empty, and restoring
+   color when the field is focused or valid (we keep Start/End date required in the form). */
+input[type="date"] {
+  color: transparent;
+}
+
+/* WebKit-specific date-edit parts */
+input[type="date"]::-webkit-datetime-edit,
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: transparent;
+}
+
+/* Restore visible color when focused or when the field has a valid value */
+input[type="date"]:focus,
+input[type="date"]:valid {
+  color: $white;
 }
 
 .field-wrap {
