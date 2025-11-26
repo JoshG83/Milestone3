@@ -31,7 +31,7 @@ export SMTP_PORT="587"
 ### 2. Start the Application
 
 ```bash
-cd /Users/joshuagoyette/Documents/Milestone3
+cd /Users/******/Documents/Milestone3
 .venv/bin/python app.py
 ```
 
