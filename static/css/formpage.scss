@@ -2,24 +2,24 @@
     to navigate the interface. Using SCSS makes it easier for us to define certain functions for
     colors and other stylizations, which then create a CSS file that is read by the HTML/Python
     application. The only file that ever needs changing is the SCSS file, and the CSS file should not be touched.
-*/
+    */
 
-$body-bg: #292522;
-$form-bg: #13232f;
-$white: #ffffff;
+    // Variables
+    $body-bg: #c1bdba;
+    $form-bg: #13232f;
+    $white: #ffffff;
 
-$main: #1ab188;
-$main-light: lighten($main, 5%);
-$main-dark: darken($main, 5%);
+    $main: #1ab188;
+    $main-light: lighten($main, 5%);
+    $main-dark: darken($main, 5%);
 
-$gray-light: #a0b3b0;
-$gray: #ddd;
+    $gray-light: #a0b3b0;
+    $gray: #ddd;
 
-$thin: 300;
-$normal: 400;
-$bold: 600;
-$br: 4px;
-
+    $thin: 300;
+    $normal: 400;
+    $bold: 600;
+    $br: 4px;
 /* This begins the stylization of the HTML scheduling page, in terms of font size, font type, and page layout.
    Being SCSS, we can use what we entered above as functions or defniitions that we later reuse in our code */
 
@@ -153,18 +153,22 @@ label.highlight {
   color: $white;
 }
 
+/* Input and textarea sizing: use sensible defaults and remove full-height.
+   This prevents controls from expanding undesirably. */
 input,
 textarea {
-  font-size: 22px;
+  font-size: 16px;
+  line-height: 1.4;
   display: block;
   width: 100%;
-  height: 100%;
-  padding: 5px 10px;
+  height: auto;
+  padding: 8px 10px;
   background: none;
   background-image: none;
   border: 1px solid $gray-light;
   color: $white;
-  border-radius: 0;
+  border-radius: 2px;
+  box-sizing: border-box;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
   &:focus {
     outline: 0;
@@ -191,6 +195,20 @@ input:-moz-autofill,
 textarea:-moz-autofill {
   box-shadow: 0 0 0px 1000px transparent inset !important;
   -moz-text-fill-color: $white !important;
+}
+
+/* Force textarea (Reason field) color inside the form to white on all platforms.
+   High-specificity selector + !important to override any UA or autofill coloring.
+   This addresses cases where server-hosted pages show the text in $main (green).
+*/
+.form textarea,
+.form textarea:focus,
+.form textarea:-webkit-autofill,
+.form textarea:-moz-autofill,
+.form textarea:-webkit-textarea-decoration {
+  color: $white !important;
+  -webkit-text-fill-color: $white !important;
+  box-shadow: 0 0 0px 1000px transparent inset !important;
 }
 
 /* Remove native number input spin buttons (cross-browser) */

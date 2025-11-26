@@ -1,28 +1,30 @@
+/* This starts our simple JavaScript code for handling the form interactions */
+/* The first line looks for all input and textarea elements on a webpage */
 $('.form').find('input, textarea').on('keyup blur focus', function (e) {
-  
-  var $this = $(this),
-      label = $this.prev('label');
+/* We start */
+  var inputelement = $(this),
+      label = inputelement.prev('label');
 
 
 
 	  if (e.type === 'keyup') {
-			if ($this.val() === '') {
+			if (inputelement.val() === '') {
           label.removeClass('active highlight');
         } else {
           label.addClass('active highlight');
         }
     } else if (e.type === 'blur') {
-    	if( $this.val() === '' ) {
+    	if( inputelement.val() === '' ) {
     		label.removeClass('active highlight'); 
 			} else {
 		    label.removeClass('highlight');   
 			}   
     } else if (e.type === 'focus') {
       
-      if( $this.val() === '' ) {
+      if( inputelement.val() === '' ) {
     		label.removeClass('highlight'); 
 			} 
-      else if( $this.val() !== '' ) {
+      else if( inputelement.val() !== '' ) {
 		    label.addClass('highlight');
 			}
     }

@@ -61,4 +61,36 @@ document.addEventListener('DOMContentLoaded', function () {
       alert('Form submitted (demo)\n\n' + data);
     });
   });
+
+  // JS fallback to forcibly set textarea color (workaround for stubborn autofill styles)
+  function forceTextareaColor() {
+    const textareas = document.querySelectorAll('.form textarea, .field-wrap textarea, textarea#reason');
+    textareas.forEach((t) => {
+      // inline styles have higher precedence than many stylesheet rules
+      t.style.color = '#ffffff';
+      t.style.backgroundColor = t.style.backgroundColor || 'transparent';
+      // vendor fill color (some browsers honor this when set inline)
+      t.style.setProperty('-webkit-text-fill-color', '#ffffff', 'important');
+      t.style.setProperty('transition', 'color 0.01s linear');
+    });
+  }
+
+  // Run immediately and a few times after load to catch delayed autofill application
+  forceTextareaColor();
+  setTimeout(forceTextareaColor, 100);
+  setTimeout(forceTextareaColor, 500);
+  setTimeout(forceTextareaColor, 1500);
+
+  // Re-apply when focus/blur happens on textareas (some browsers re-style on focus)
+  document.addEventListener('focusin', (e) => {
+    if (e.target && e.target.tagName === 'TEXTAREA') forceTextareaColor();
+  });
+
+  // Some browsers dispatch an animationstart when autofill triggers; use it if available
+  document.addEventListener('animationstart', (e) => {
+    // animationName can vary by UA; we just reapply on any animationstart as a safe fallback
+    if (e && e.srcElement && (e.animationName || '').toLowerCase().includes('auto')) {
+      forceTextareaColor();
+    }
+  }, true);
 });
