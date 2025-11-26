@@ -5,10 +5,17 @@
 # NOTE: Our Enhanced Scheduling System application is actively hosted at http://schedulingsystem.xyz/
 
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+import json
+import csv
+import io
+from datetime import datetime, timedelta
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 import sass
 import psycopg2
 import psycopg2.extras
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # Basic starting code for our flask app to get up and running properly.
 
@@ -24,6 +31,12 @@ DB_NAME = "UKG_DB"
 DB_USER = "JoshG83"
 DB_PASSWORD = "K1E%*$zc7VF6YppVsYpG"
 
+# ------------- Email CONFIG (for notifications) ------------- #
+SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
+SENDER_EMAIL = os.environ.get('SENDER_EMAIL', '4020schedulingsystem@gmail.com')
+SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD', 'dnem ugnz spbe lwmy')
+
 # We define a function that makes our connection to AWS EC2 possible and secure.
 
 def AWS_connection():
@@ -36,6 +49,82 @@ def AWS_connection():
         password=DB_PASSWORD
     )
     return conn
+
+
+def send_email(recipient_email, employee_name, start_date, end_date):
+    """Send a confirmation email to the employee after PTO request submission."""
+    try:
+        subject = "PTO Request Confirmation"
+        body = f"""
+Dear {employee_name},
+
+Your PTO request has been successfully submitted.
+
+Request Details:
+- Start Date: {start_date}
+- End Date: {end_date}
+- Status: Pending
+
+You can view all your PTO requests by logging into your account.
+
+Best regards,
+HR Department
+        """
+        
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = recipient_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+        
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        
+        app.logger.info(f"Email sent to {recipient_email}")
+        return True
+    except Exception as e:
+        app.logger.error(f"Error sending email: {e}")
+        return False
+
+
+def init_db():
+    """Initialize database tables if they don't exist."""
+    try:
+        conn = AWS_connection()
+        cur = conn.cursor()
+        
+        # Create Requests table if it doesn't exist
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS "UKG"."Requests" (
+                id SERIAL PRIMARY KEY,
+                employee_id INTEGER NOT NULL,
+                start_date DATE NOT NULL,
+                end_date DATE NOT NULL,
+                reason TEXT,
+                created_at TIMESTAMP DEFAULT NOW(),
+                status VARCHAR(50) DEFAULT 'pending'
+            );
+        """)
+        
+        # Create Backup_Storage table if it doesn't exist
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS "UKG"."Backup_Storage" (
+                id SERIAL PRIMARY KEY,
+                backup_type VARCHAR(50),
+                backup_data JSON,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+        """)
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        app.logger.info("Database tables initialized successfully")
+    except Exception as e:
+        app.logger.error(f"Database initialization error: {e}")
 
 
 # In memory list of PTO requests, we will use this to test our PTO form submissions
@@ -163,19 +252,155 @@ def pto():
         if not start or not end:
             error = 'Please provide both start and end dates.'
             return render_template('pto.html', employee_name=employee_name, error=error)
-        # Save request (demo)
-        pto_requests.append({
-            'employee_id': emp_id,
-            'employee_name': employee_name,
-            'start': start,
-            'end': end,
-            'reason': reason
-        })
-        # Once the PTO request is submitted through the form, the user is given a success message.
-        success = 'PTO request submitted.'
-        return render_template('pto.html', employee_name=employee_name, success=success)
+        
+        # Insert PTO request into RDS database
+        try:
+            conn = AWS_connection()
+            cur = conn.cursor()
+            
+            insert_query = """
+                INSERT INTO "UKG"."Requests" (employee_id, start_date, end_date, reason, status)
+                VALUES (%s, %s, %s, %s, 'pending')
+                RETURNING id;
+            """
+            cur.execute(insert_query, (emp_id, start, end, reason))
+            conn.commit()
+            
+            # Get employee email from UKG.Employee table to send notification
+            email_query = """
+                SELECT "Email"
+                FROM "UKG"."Employee"
+                WHERE "Employee_ID" = %s;
+            """
+            cur.execute(email_query, (emp_id,))
+            email_row = cur.fetchone()
+            employee_email = email_row[0] if email_row else None
+            
+            cur.close()
+            conn.close()
+            
+            # Send email notification if email exists
+            if employee_email:
+                send_email(employee_email, employee_name, start, end)
+            
+            # Once the PTO request is submitted through the form, the user is given a success message.
+            success = 'PTO request submitted successfully. A confirmation email has been sent.'
+            return render_template('pto.html', employee_name=employee_name, success=success)
+            
+        except Exception as e:
+            app.logger.error(f"Error inserting PTO request: {e}")
+            import traceback
+            app.logger.error(traceback.format_exc())
+            error = f'Error submitting PTO request: {str(e)}'
+            return render_template('pto.html', employee_name=employee_name, error=error)
 
     return render_template('pto.html', employee_name=employee_name)
+
+
+# Route to view all PTO requests submitted by the logged-in employee
+@app.route('/requests')
+def view_requests():
+    emp_id = session.get('employee_id')
+    if not emp_id:
+        return redirect(url_for('homepage'))
+    
+    employee_name = session.get('employee_name', 'Unknown')
+    requests_list = []
+    
+    try:
+        conn = AWS_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        query = """
+            SELECT id, start_date, end_date, reason, status, created_at
+            FROM "UKG"."Requests"
+            WHERE employee_id = %s
+            ORDER BY created_at DESC;
+        """
+        cur.execute(query, (emp_id,))
+        requests_list = cur.fetchall()
+        
+        cur.close()
+        conn.close()
+    except Exception as e:
+        app.logger.error(f"Error fetching PTO requests: {e}")
+        flash('Error loading your requests.', 'error')
+    
+    return render_template('requests.html', employee_name=employee_name, requests=requests_list)
+
+
+# Route to generate schedule (CSV/JSON) with all employees and their PTO
+@app.route('/schedule')
+def generate_schedule():
+    emp_id = session.get('employee_id')
+    if not emp_id:
+        return redirect(url_for('homepage'))
+    
+    try:
+        conn = AWS_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Fetch all employees
+        employees_query = """
+            SELECT "Employee_ID", "First_Name", "Last_Name"
+            FROM "UKG"."Employee"
+            ORDER BY "Employee_ID";
+        """
+        cur.execute(employees_query)
+        employees = cur.fetchall()
+        
+        # Fetch all PTO requests
+        pto_query = """
+            SELECT employee_id, start_date, end_date
+            FROM "UKG"."Requests"
+            WHERE status = 'pending' OR status = 'approved';
+        """
+        cur.execute(pto_query)
+        pto_requests_list = cur.fetchall()
+        
+        # Build schedule data
+        schedule_data = {}
+        for emp in employees:
+            schedule_data[emp['Employee_ID']] = {
+                'name': f"{emp['First_Name']} {emp['Last_Name']}",
+                'pto_dates': []
+            }
+        
+        # Add PTO dates to employees
+        for pto in pto_requests_list:
+            emp_id_pto = pto['employee_id']
+            start = datetime.strptime(str(pto['start_date']), '%Y-%m-%d')
+            end = datetime.strptime(str(pto['end_date']), '%Y-%m-%d')
+            
+            current_date = start
+            while current_date <= end:
+                schedule_data[emp_id_pto]['pto_dates'].append(current_date.strftime('%Y-%m-%d'))
+                current_date += timedelta(days=1)
+        
+        # Generate JSON backup and store in RDS
+        backup_json = json.dumps(schedule_data, indent=2, default=str)
+        
+        backup_query = """
+            INSERT INTO "UKG"."Backup_Storage" (backup_type, backup_data)
+            VALUES ('schedule', %s);
+        """
+        cur.execute(backup_query, (json.dumps(schedule_data),))
+        conn.commit()
+        
+        cur.close()
+        conn.close()
+        
+        # Return as JSON download
+        output = io.BytesIO()
+        output.write(backup_json.encode())
+        output.seek(0)
+        
+        return send_file(output, mimetype='application/json', as_attachment=True, download_name='schedule.json')
+        
+    except Exception as e:
+        app.logger.error(f"Error generating schedule: {e}")
+        flash('Error generating schedule.', 'error')
+        return redirect(url_for('pto'))
 
 # Finally, we make sure to have a logout route made so employees can securely exit their PTO page session.
 @app.route('/logout')
@@ -186,4 +411,6 @@ def logout():
 
 # Boilerplate code that needs to exist for the webpage to run on Flask.
 if __name__ == '__main__':
+    # Initialize database tables on startup
+    init_db()
     app.run(debug=True, host='0.0.0.0', port=5000)

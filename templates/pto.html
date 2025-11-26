@@ -13,7 +13,10 @@
 <body>
 <div class="form">
   <h1>PTO Request</h1>
-  <p>Signed in as: <strong class="employee-name">{{ employee_name }}</strong> (<a href="{{ url_for('logout') }}">Sign out</a>)</p>
+  <p>Signed in as: <strong class="employee-name">{{ employee_name }}</strong> 
+  (<a href="{{ url_for('view_requests') }}">View Your Requests</a> | 
+   <a href="{{ url_for('generate_schedule') }}">Download Schedule</a> |
+   <a href="{{ url_for('logout') }}">Sign out</a>)</p>
 
   {% if error %}
     <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">{{ error }}</p>
