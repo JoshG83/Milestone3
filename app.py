@@ -8,6 +8,7 @@ import os
 import json
 import csv
 import io
+from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 import sass
@@ -17,6 +18,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+load_dotenv()
 # Basic starting code for our flask app to get up and running properly.
 
 app = Flask(__name__)
@@ -25,17 +27,17 @@ app.secret_key = os.environ.get('FLASK_SECRET', 'dev-secret-change-me')
 # AWS credentials that our program must have in order to access our EC2 server and in-turn our RDS database.
 
 # ------------- Amazon Web Services RDS CONFIG  ------------- #
-DB_HOST = "database-1.cluoyi622s3s.us-east-2.rds.amazonaws.com"
-DB_PORT = 5432
-DB_NAME = "UKG_DB"
-DB_USER = "JoshG83"
-DB_PASSWORD = "K1E%*$zc7VF6YppVsYpG"
+DB_HOST = os.environ.get("DB_HOST", "database-1.cluoyi622s3s.us-east-2.rds.amazonaws.com")
+DB_PORT = int(os.environ.get("DB_PORT", 5432))
+DB_NAME = os.environ.get("DB_NAME", "UKG_DB")
+DB_USER = os.environ.get("DB_USER", "JoshG83")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")  # no default for password
 
 # ------------- Email CONFIG (for notifications) ------------- #
-SMTP_SERVER = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
-SMTP_PORT = int(os.environ.get('SMTP_PORT', 587))
-SENDER_EMAIL = os.environ.get('SENDER_EMAIL', '4020schedulingsystem@gmail.com')
-SENDER_PASSWORD = os.environ.get('SENDER_PASSWORD', 'dnem ugnz spbe lwmy')
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "4020schedulingsystem@gmail.com")
+SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")  # no default for password
 
 # We define a function that makes our connection to AWS EC2 possible and secure.
 
