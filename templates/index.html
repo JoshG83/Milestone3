@@ -14,10 +14,10 @@
 </head>
 <body>
 
-
+<!-- The main form container that can hold our form elements -->
 <div class="form">
       
-      
+      <!-- Tab content container which is necessary for our interface -->
       <div class="tab-content">
         <div id="signup">   
           <h1>UKG Enhanced Scheduling System</h1>
@@ -26,7 +26,7 @@
           {% endif %}
 
           <form action="/" method="post">
-
+<!-- Employee ID input field with validation for only numerical inputs -->
           <div class="field-wrap">
             <label>
               Employee ID<span class="req">*</span>
@@ -39,7 +39,7 @@
                      class="employee-id-input" 
                      required />
           </div>
-
+<!-- Password input field and sign in button -->
           <button type="submit" class="button button-block">Sign In</button>
 
           </form>
@@ -50,7 +50,7 @@
       
 </div> <!-- /form -->
 
-<!-- jQuery is required by the included formpage.js; load from CDN before the script -->
+<!-- jQuery is required by the included formpage.js in order for our webpage to function properly. -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJ+Y3bZ6k2m7rKkQ5c5o2Q5c5o2Q5c5o2Q5c=" crossorigin="anonymous"></script>
 <script src="/static/js/formpage.js"></script>
 </body>

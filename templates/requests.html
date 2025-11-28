@@ -1,139 +1,146 @@
+<!-- We create a page that will display all of the PTO requests that the employee has made using the website
+     The First six lines or so contain the basic code every HTML page needs to function and display text properly. -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your PTO Requests</title>
+    <!-- Simple stylesheet link that allows our website to be styled consistently with CSS -->
     <link rel="stylesheet" href="/static/css/formpage.css">
     <style>
         .requests-container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
+            max-width: 1000px; /* Maximum width of the requests container */
+            margin: 2rem auto; /* Used to center the container horizontally */
+            padding: 2rem; /* Inner spacing of the container */
+            background: white; /* White background to allow easy visibility */
         }
         .requests-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
+            display: flex; /* We use flexbox for layout */
+            justify-content: space-between; /* Space between the title and buttons */
+            align-items: center; /* Vertically center the items inside the container */
+            margin-bottom: 2rem; /* Space below the header */
         }
         .requests-header h1 {
-            margin: 0;
-            color: #333;
+            margin: 0; /* Removes default margin */
+            color: #333; /* Dark text color for the header to make it standout */
         }
         .btn-group {
-            display: flex;
-            gap: 1rem;
+            display: flex; /* Flexbox for the button layout */
+            gap: 1rem; /* Space between the buttons */
         }
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            text-decoration: none;
-            transition: all 0.3s;
+            padding: 0.75rem 1.5rem; /* Padding inside the button itself */
+            border: none; /* No border for a cleaner look */
+            border-radius: 4px; /* Rounded corners for the button */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 1rem; /* Font size for the button text */
+            text-decoration: none; /* Remove underline from links */
+            transition: all 0.3s; /* Smooth transition used for hover effects */
         }
         .btn-primary {
-            background-color: #007bff;
-            color: white;
+            background-color: #007bff; /* Primary button background color */
+            color: white; /* White text color for contrast */
         }
         .btn-primary:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Darker blue on hover */
         }
         .btn-secondary {
-            background-color: #6c757d;
-            color: white;
+            background-color: #6c757d; /* Secondary button background color */
+            color: white; /* White text color for contrast */
         }
         .btn-secondary:hover {
-            background-color: #5a6268;
+            background-color: #5a6268; /* Darker gray on hover */
         }
         .btn-download {
-            background-color: #28a745;
-            color: white;
+            background-color: #28a745; /* Download button background color */
+            color: white; /* White text color for contrast */
         }
         .btn-download:hover {
-            background-color: #218838;
+            background-color: #218838; /* Darker green on hover */
         }
         .requests-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
+            width: 100%; /* Full width table */
+            border-collapse: collapse; /* Collapse borders for cleaner look */
+            margin-top: 1rem; /* Space above the table */
         }
         .requests-table thead {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            background-color: #f8f9fa; /* Light gray background for the table header */
+            border-bottom: 2px solid #dee2e6; /* Bottom border for the header */
         }
         .requests-table th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
+            padding: 1rem; /* Padding inside the table headers */
+            text-align: left; /* Left align the header text */
+            font-size: 1rem; /* Font size for the header text */
+            font-weight: 600; /* Semi-bold font weight for headers */
+            color: #333; /* Dark text color for headers */
         }
         .requests-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #dee2e6;
+            padding: 1rem; /* Padding inside the table cells */
+            border-bottom: 1px solid #dee2e6; /* Bottom border for table cells */
         }
         .requests-table tbody tr:hover {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Highlight row on hover */
         }
         .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
+            display: inline-block; /* Inline block for proper sizing */
+            padding: 0.25rem 0.75rem; /* Padding inside the badge */
+            border-radius: 20px; /* Rounded badge shape */
+            font-size: 0.875rem; /* Slightly smaller font size */
+            font-weight: 600; /* Semi-bold font weight for badges */
         }
         .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
+            background-color: #fff3cd; /* Light yellow background for pending status */
+            color: #856404; /* Dark yellow text color for pending status */
         }
         .status-approved {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #d4edda; /* Light green background for approved status */
+            color: #155724; /* Dark green text color for approved status */
         }
         .status-denied {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #f8d7da; /* Light red background for denied status */
+            color: #721c24; /* Dark red text color for denied status */
         }
         .no-requests {
-            text-align: center;
-            padding: 2rem;
-            color: #6c757d;
-            font-size: 1.1rem;
+            text-align: center; /* Center align the no requests message */
+            padding: 2rem; /* Padding around the message */
+            color: #6c757d; /* Gray text color for the message */
+            font-size: 1.1rem; /* Slightly larger font size for visibility */
         }
         .employee-info {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 4px;
+            margin-bottom: 1.5rem; /* Space below the employee info section */
+            padding: 1rem; /* Padding inside the employee info section */
+            background-color: #f8f9fa; /* Light gray background for the section */
+            border-radius: 4px; /* Rounded corners for the section */
         }
         .employee-info p {
-            margin: 0;
-            color: #495057;
+            margin: 0; /* Remove default margin */
+            color: #495057; /* Dark gray text color for the employee info */
         }
         .success-message {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-            color: #155724;
+            padding: 1rem; /* Padding inside the success message */
+            margin-bottom: 1rem; /* Space below the success message */
+            background-color: #d4edda; /* Light green background for success message */
+            border: 1px solid #c3e6cb; /* Border for the success message */
+            border-radius: 4px; /* Rounded corners for the success message */
+            color: #155724; /* Dark green text color for the success message */
         }
         .error-message {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 4px;
-            color: #721c24;
+            padding: 1rem; /* Padding inside the error message */
+            margin-bottom: 1rem; /* Space below the error message */
+            background-color: #f8d7da; /* Light red background for error message */
+            border: 1px solid #f5c6cb; /* Border for the error message */
+            border-radius: 4px; /* Rounded corners for the error message */
+            color: #721c24; /* Dark red text color for the error message */
         }
     </style>
+<!-- Builds the top section page for the PTO requests. -->
 </head>
 <body>
     <div class="requests-container">
         <div class="requests-header">
+            <!-- The title of the page in header format and three buttons -->
             <h1>Your PTO Requests</h1>
             <div class="btn-group">
                 <a href="/pto" class="btn btn-primary">Submit New Request</a>
@@ -141,12 +148,14 @@
                 <a href="/logout" class="btn btn-secondary">Sign Out</a>
             </div>
         </div>
-
+<!-- Displays the employees name at the top of the page -->
         <div class="employee-info">
             <p><strong>Employee:</strong> {{ employee_name }}</p>
         </div>
-
+<!-- Displays any success or error messages that may have occurred on the webpage -->
+        {% if success %}
         {% if requests %}
+<!-- Builds the table that will display all of the PTO requests that the employee has made -->
         <table class="requests-table">
             <thead>
                 <tr>
@@ -158,21 +167,25 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- For loop that will go through each PTO request made and display it in the table on screen -->
                 {% for req in requests %}
                 <tr>
                     <td>{{ req['start_date'] }}</td>
                     <td>{{ req['end_date'] }}</td>
                     <td>{{ req['reason'] or 'N/A' }}</td>
+                    <!-- Displays the status of the PTO request with a colored badge -->
                     <td>
                         <span class="status-badge status-{{ req['status'].lower() }}">
                             {{ req['status'].capitalize() }}
                         </span>
                     </td>
+                    <!-- Displays the date and time the PTO request was created -->
                     <td>{{ req['created_at'].strftime('%Y-%m-%d %H:%M') if req['created_at'] else 'N/A' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <!-- If there are no PTO requests, the website displaysa message and a button to submit the first request -->
         {% else %}
         <div class="no-requests">
             <p>You have not submitted any PTO requests yet.</p>

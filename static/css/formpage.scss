@@ -2,42 +2,43 @@
     to navigate the interface. Using SCSS makes it easier for us to define certain functions for
     colors and other stylizations, which then create a CSS file that is read by the HTML/Python
     application. The only file that ever needs changing is the SCSS file, and the CSS file should not be touched.
-    */
+    This scss file will be commenting on behalf of the css file, since it is created/overwritten on the fly. */
 
     // Variables
-    $body-bg: #c1bdba;
-    $form-bg: #13232f;
-    $white: #ffffff;
+    $body-bg: #c1bdba; // Light grayish blue background we use for the body of the page
+    $form-bg: #13232f; // Dark blue background for the form container area of the page
+    $white: #ffffff; // White color for the text and elements on page
 
-    $main: #1ab188;
-    $main-light: lighten($main, 5%);
-    $main-dark: darken($main, 5%);
+    $main: #1ab188; // Main accent color (teal)
+    $main-light: lighten($main, 5%); // Lighter version of the main color
+    $main-dark: darken($main, 5%); // Darker version of the main color
 
-    $gray-light: #a0b3b0;
-    $gray: #ddd;
+    $gray-light: #a0b3b0; // Light gray color for secondary text and elements
+    $gray: #ddd; // Medium gray color for borders and backgrounds
 
-    $thin: 300;
-    $normal: 400;
-    $bold: 600;
-    $br: 4px;
+    $thin: 300; // Thin font weight
+    $normal: 400; // Normal font weight
+    $bold: 600; // Bold font weight
+    $br: 4px; // Border radius for rounded corners
 /* This begins the stylization of the HTML scheduling page, in terms of font size, font type, and page layout.
    Being SCSS, we can use what we entered above as functions or defniitions that we later reuse in our code */
 
+/* Apply box-sizing border-box to all elements for easier and more universal sizing */
 *,
 *:before,
 *:after {
   box-sizing: border-box;
 }
-
+/* Ensure vertical scrollbar is always visible to prevent layout shift and/or layout confusion */
 html {
   overflow-y: scroll;
 }
-
+/* Body styling: background color and font family of the webpage */
 body {
   background: $body-bg;
   font-family: "Titillium Web", sans-serif;
 }
-
+/* Anchor link styling: remove underline, set color to main accent color defined at the beginning, and add hover effect */
 a {
   text-decoration: none;
   color: $main;
@@ -46,7 +47,7 @@ a {
     color: $main-dark;
   }
 }
-
+/* Form container styling: background color, padding, max width, centering, border radius, and box shadow all defined */
 .form {
   background: rgba($form-bg, 0.9);
   padding: 40px;
@@ -55,7 +56,7 @@ a {
   border-radius: $br;
   box-shadow: 0 4px 10px 4px rgba($form-bg, 0.3);
 }
-
+/* Tab group styling: list style, padding, margin, and clearfix */
 .tab-group {
   list-style: none;
   padding: 0;
@@ -65,6 +66,7 @@ a {
     display: table;
     clear: both;
   }
+  /* Each tab styling: width, float, and anchor link styles including more hover effects */
   li a {
     display: block;
     text-decoration: none;
@@ -82,18 +84,19 @@ a {
       color: $white;
     }
   }
+  /* Active tab styling: different background and text color to indicate an active state */
   .active a {
     background: $main;
     color: $white;
   }
 }
 
-/* Ensure tab content is visible; original rule hid the last tab which
-   became the only tab after template edits. Display all tab panes by default. */
+/* Make sure tab content is visible; original rule hid the last tab which
+   became the only tab after template edits. We want to display all tab panes by default. */
 .tab-content > div {
   display: block;
 }
-
+/* Page title styling: center alignment, color, font weight, and margin. Simple main page title styles */
 h1 {
   text-align: center;
   color: $white;
@@ -101,21 +104,21 @@ h1 {
   margin: 0 0 40px;
 }
 
-/* Employee name on PTO page */
+/* Employee name present on PTO page for convenience */
 .employee-name {
   color: $white;
   font-weight: $bold;
 }
 
 /* Ensure paragraph text inside the form is visible on dark background,
-   but keep anchor links their accent color. */
+   but keep anchor links their accent color to avoid confusion. */
 .form p {
   color: $white;
 }
 .form p a {
   color: $main;
 }
-
+/* Label styling: position, color, transition effects, and font size to stand out */
 label {
   position: absolute;
   transform: translateY(6px);
@@ -132,7 +135,7 @@ label {
   }
 }
 
-/* When a field is active (has focus or content), hide the label completely
+/* When a field is active (has focus or content), we want to hide the label completely
    so it doesn't overlap with the input/textarea. We animate opacity for a
    smooth transition. */
 label.active,
@@ -178,7 +181,8 @@ textarea {
 
 /* Fix browser autofill styling (Chrome / Safari / Firefox) which can change
    the input text color (e.g. show green text). Force white text and remove
-   the yellow/green autofill background. */
+   the yellow/green autofill background. Common error that kept occuring during the testing phase
+   and we wanted to make sure that this application could function on all major browsers without fail. */
 input:-webkit-autofill,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:hover,
@@ -190,7 +194,7 @@ textarea:-webkit-autofill:hover {
   box-shadow: 0 0 0px 1000px transparent inset !important;
 }
 
-/* Firefox autofill */
+/* Firefox-specific autofill */
 input:-moz-autofill,
 textarea:-moz-autofill {
   box-shadow: 0 0 0px 1000px transparent inset !important;
@@ -200,6 +204,7 @@ textarea:-moz-autofill {
 /* Force textarea (Reason field) color inside the form to white on all platforms.
    High-specificity selector + !important to override any UA or autofill coloring.
    This addresses cases where server-hosted pages show the text in $main (green).
+   Also completely addresses autofill coloring issues for the textarea object.
 */
 .form textarea,
 .form textarea:focus,
@@ -211,7 +216,7 @@ textarea:-moz-autofill {
   box-shadow: 0 0 0px 1000px transparent inset !important;
 }
 
-/* Remove native number input spin buttons (cross-browser) */
+/* Remove native number input spin buttons (cross-browser). Basically we don't want arrows in our input area field. */
 /* WebKit browsers */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -220,7 +225,7 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Firefox */
+/* Firefox specific code to fix the textfield */
 input[type="number"] {
   -moz-appearance: textfield; /* keep the textfield look */
   appearance: textfield;
@@ -231,8 +236,8 @@ textarea {
   resize: vertical;
 }
 
-/* Remove browser placeholder like 'mm/dd/yyyy' but keep entered date visible.
-   Works by making the date input text color transparent when empty, and restoring
+/* Remove browser placeholder like 'mm/dd/yyyy' but keeps entered date visible.
+   This Works by making the date input text color transparent when empty, and restoring
    color when the field is focused or valid (we keep Start/End date required in the form). */
 input[type="date"] {
   color: transparent;
@@ -252,19 +257,20 @@ input[type="date"]:focus,
 input[type="date"]:valid {
   color: $white;
 }
-
+/* WebKit-specific date-edit parts when focused or valid */
 .field-wrap {
   position: relative;
   margin-bottom: 40px;
 }
 
+/* Container for the top row of form fields, typically used for side-by-side inputs */
 .top-row {
   &:after {
     content: "";
     display: table;
     clear: both;
   }
-
+/* Each div inside the top-row gets 48% width and floats left, with a 4% margin on the right for spacing */
   > div {
     float: left;
     width: 48%;
@@ -274,7 +280,8 @@ input[type="date"]:valid {
     }
   }
 }
-
+/* Button styling: remove borders, set padding, font size, background color, text color, and hover effects
+     */
 .button {
   border: 0;
   outline: none;
@@ -295,26 +302,16 @@ input[type="date"]:valid {
     background: $main-dark;
   }
 }
-
+/* Full-width button styling: it makes the button take up the full width of its container */
 .button-block {
   display: block;
   width: 100%;
 }
-
+/* Forgot password link styling: margin and text alignment to the right */
 .forgot {
   margin-top: -20px;
   text-align: right;
 }
-
-// Remove or comment out this if you added it globally:
-// input,
-// input[type="text"],
-// input[type="number"],
-// input[type="email"],
-// input[type="password"] {
-//   color: #ffffff !important;
-//   -webkit-text-fill-color: #ffffff !important;
-// }
 
 // Instead, target ONLY the login Employee ID field
 .employee-id-input {
