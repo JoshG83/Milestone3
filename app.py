@@ -1,6 +1,8 @@
 # For our Milestone 3 to work properly on the web, we will need to install many packages
 # like Pythonk Flash, SASS, and Psycopg2 to connect with our AWS EC2 server that works with
 # the AWS RDS that stores all of our information on employees, logins, requests etc.
+# Some other libraries were added later to assist with email notifications as well as making downloads of time off requests
+# possible with CSV and JSON formats being imported.
 
 # NOTE: Our Enhanced Scheduling System application is actively hosted at http://schedulingsystem.xyz/
 
@@ -25,6 +27,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET', 'dev-secret-change-me')
 
 # AWS credentials that our program must have in order to access our EC2 server and in-turn our RDS database.
+# Made a later change in my code to use these enviornment variables for a more secure connection to the AWS EC2 server.
+# These environment variables look on the local storage device for the credentials to access the server, so they don't have to be stored in memory.
+# Defaults can be set for less sensitive fields.
 
 # ------------- Amazon Web Services RDS CONFIG  ------------- #
 DB_HOST = os.environ.get("DB_HOST", "database-1.cluoyi622s3s.us-east-2.rds.amazonaws.com")
@@ -32,6 +37,10 @@ DB_PORT = int(os.environ.get("DB_PORT", 5432))
 DB_NAME = os.environ.get("DB_NAME", "UKG_DB")
 DB_USER = os.environ.get("DB_USER", "JoshG83")
 DB_PASSWORD = os.environ.get("DB_PASSWORD")  # no default for password
+
+# Same situation as above in order for emails to get sent out. 
+# As far as emails go, I'm using a newly created Gmail account to send out request confirmations using SMTP.
+# This function requires the use of an app password which can be an easy way to lose a Gmail account if not managed correctly.
 
 # ------------- Email CONFIG (for notifications) ------------- #
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
@@ -52,6 +61,8 @@ def AWS_connection():
     )
     return conn
 
+# We also define a basic email function that includes the recipients email, their name, and the start-end date of their PTO.
+# An email layout is then given where some fields are automatically filled with the variables inside of the function.
 
 def send_email(recipient_email, employee_name, start_date, end_date):
     """Send a confirmation email to the employee after PTO request submission."""
@@ -70,14 +81,17 @@ Request Details:
 You can view all your PTO requests by logging into your account.
 
 Best regards,
-HR Department
+UKG Enhanced Scheduling System
         """
-        
+        # We reference the SMTP library here to send out the email using variables defined earlier.
+
         msg = MIMEMultipart()
         msg['From'] = SENDER_EMAIL
         msg['To'] = recipient_email
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'plain'))
+
+        # This section is where the sendoff of the email occurs utilizing SMTP.
         
         server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         server.starttls()
@@ -85,12 +99,16 @@ HR Department
         server.send_message(msg)
         server.quit()
         
+        # Simple check to ensure that the email was sent successfully and greets the user with a success message.
+        # The opposite happens if the email fails to send for any reason.
+
         app.logger.info(f"Email sent to {recipient_email}")
         return True
     except Exception as e:
         app.logger.error(f"Error sending email: {e}")
         return False
 
+#  This is a function we defined that initializes our database tables if they do not exist in the RDS database for any reason.
 
 def init_db():
     """Initialize database tables if they don't exist."""
@@ -98,7 +116,7 @@ def init_db():
         conn = AWS_connection()
         cur = conn.cursor()
         
-        # Create Requests table if it doesn't exist
+        # This cursor function call creates a Requests table if it doesn't exist, and several columns are defined for the Requests table.
         cur.execute("""
             CREATE TABLE IF NOT EXISTS "UKG"."Requests" (
                 id SERIAL PRIMARY KEY,
@@ -111,7 +129,7 @@ def init_db():
             );
         """)
         
-        # Create Backup_Storage table if it doesn't exist
+        # This cursor function call creates a Backup_Storage table if it doesn't exist and also fills in the table with several necesssary columns.
         cur.execute("""
             CREATE TABLE IF NOT EXISTS "UKG"."Backup_Storage" (
                 id SERIAL PRIMARY KEY,
@@ -121,6 +139,8 @@ def init_db():
             );
         """)
         
+        # We use a few function calls to commit the changes to the database as well as closing both the cursor and the connection.
+        # We log a success message when and if the tables are successfully created or picked up by the cursor function, and an error message is given if something goes wrong.
         conn.commit()
         cur.close()
         conn.close()
@@ -259,21 +279,23 @@ def pto():
         try:
             conn = AWS_connection()
             cur = conn.cursor()
-            
+        # We create a variables called insert_query to act as SQL code that is tasked with inserting the PTO request into the Requests table.
             insert_query = """
                 INSERT INTO "UKG"."Requests" (employee_id, start_date, end_date, reason, status)
                 VALUES (%s, %s, %s, %s, 'pending')
                 RETURNING id;
             """
+        # We execute the query using the cursor and filling in necessary variables for successful execution.
             cur.execute(insert_query, (emp_id, start, end, reason))
             conn.commit()
             
-            # Get employee email from UKG.Employee table to send notification
+            # Get employee email from UKG.Employee table to send notification, matches the employee ID.
             email_query = """
                 SELECT "Email"
                 FROM "UKG"."Employee"
                 WHERE "Employee_ID" = %s;
             """
+            # Execute the email query passing in necessary variables, and also using fetchone to get the result.
             cur.execute(email_query, (emp_id,))
             email_row = cur.fetchone()
             employee_email = email_row[0] if email_row else None
@@ -289,6 +311,9 @@ def pto():
             success = 'PTO request submitted successfully. A confirmation email has been sent.'
             return render_template('pto.html', employee_name=employee_name, success=success)
             
+        ## Error catching statement in case something goes wrong while the database is being accessed.
+        ## We utilize traceback to get a full error log for debugging purposes.
+
         except Exception as e:
             app.logger.error(f"Error inserting PTO request: {e}")
             import traceback
@@ -300,15 +325,22 @@ def pto():
 
 
 # Route to view all PTO requests submitted by the logged-in employee
+# The view_requests function is defined that deals with the logic of viewing the created PTO requests.
+# emp_id receives the employee ID that is stored in the session, and if there is no employee ID the user is redirected.
+
 @app.route('/requests')
 def view_requests():
     emp_id = session.get('employee_id')
     if not emp_id:
         return redirect(url_for('homepage'))
     
+# employee_name receives the employee name from the session, which would use the employee ID to receive the employee name from the database.
+
     employee_name = session.get('employee_name', 'Unknown')
     requests_list = []
     
+    # We connect to the AWS RDS database to fetch all of the TPO requests that match the employee ID of the logged in user.
+
     try:
         conn = AWS_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -319,9 +351,11 @@ def view_requests():
             WHERE employee_id = %s
             ORDER BY created_at DESC;
         """
+        # The query is executed using the cursor and passed variables.
         cur.execute(query, (emp_id,))
         requests_list = cur.fetchall()
         
+        # We close the cursor and connection and adding a standard error catcher for debugging.
         cur.close()
         conn.close()
     except Exception as e:
@@ -333,11 +367,12 @@ def view_requests():
 
 # Route to generate schedule (CSV/JSON) with all employees and their PTO
 @app.route('/schedule')
+# We define a function called generate_schedule that does exactly what the name says.
 def generate_schedule():
     emp_id = session.get('employee_id')
     if not emp_id:
         return redirect(url_for('homepage'))
-    
+    # Connect to the RDS database to grab all employees and any PTO requests they have.
     try:
         conn = AWS_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -351,7 +386,7 @@ def generate_schedule():
         cur.execute(employees_query)
         employees = cur.fetchall()
         
-        # Fetch all PTO requests
+        # Fetch all PTO requests using a simple SQL query
         pto_query = """
             SELECT employee_id, start_date, end_date
             FROM "UKG"."Requests"
@@ -360,7 +395,8 @@ def generate_schedule():
         cur.execute(pto_query)
         pto_requests_list = cur.fetchall()
         
-        # Build schedule data
+        # Build schedule data using a dictionary variable
+        # The for loop will go through each employee and add them to the newly created schedule_data dictionary object.
         schedule_data = {}
         for emp in employees:
             schedule_data[emp['Employee_ID']] = {
@@ -368,12 +404,13 @@ def generate_schedule():
                 'pto_dates': []
             }
         
-        # Add PTO dates to employees
+        # Add the PTO dates to employees in the schedule-data dictionary object.
+        # Simple for loop that will go through each pto request and then add the dates to the corresponding employee in the schedule_data dictionary.
         for pto in pto_requests_list:
             emp_id_pto = pto['employee_id']
             start = datetime.strptime(str(pto['start_date']), '%Y-%m-%d')
             end = datetime.strptime(str(pto['end_date']), '%Y-%m-%d')
-            
+        # A while loop that goes through each date in the PTO range then adds it to the employee's PTO dates list.
             current_date = start
             while current_date <= end:
                 schedule_data[emp_id_pto]['pto_dates'].append(current_date.strftime('%Y-%m-%d'))
@@ -381,24 +418,25 @@ def generate_schedule():
         
         # Generate JSON backup and store in RDS
         backup_json = json.dumps(schedule_data, indent=2, default=str)
-        
+        # The SQL query we want to execute in order to backup the schedule data.
         backup_query = """
             INSERT INTO "UKG"."Backup_Storage" (backup_type, backup_data)
             VALUES ('schedule', %s);
         """
+        # We execute the backup query using the cursor and passing in the correct variables.
         cur.execute(backup_query, (json.dumps(schedule_data),))
         conn.commit()
         
         cur.close()
         conn.close()
         
-        # Return as JSON download
+        # Return the schedule data as JSON download for the user's convenience and storage.
         output = io.BytesIO()
         output.write(backup_json.encode())
         output.seek(0)
-        
+        # We use the send_file function that sends the JSON file to the user.
         return send_file(output, mimetype='application/json', as_attachment=True, download_name='schedule.json')
-        
+        # Simple error catch statement.
     except Exception as e:
         app.logger.error(f"Error generating schedule: {e}")
         flash('Error generating schedule.', 'error')
