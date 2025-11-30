@@ -367,79 +367,74 @@ def view_requests():
 
 # Route to generate schedule (CSV/JSON) with all employees and their PTO
 @app.route('/schedule')
-# We define a function called generate_schedule that does exactly what the name says.
 def generate_schedule():
     emp_id = session.get('employee_id')
     if not emp_id:
+        flash('Please log in to download the schedule.', 'error')
         return redirect(url_for('homepage'))
-    # Connect to the RDS database to grab all employees and any PTO requests they have.
+    
     try:
         conn = AWS_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Fetch all employees
-        employees_query = """
-            SELECT "Employee_ID", "First_Name", "Last_Name"
-            FROM "UKG"."Employee"
-            ORDER BY "Employee_ID";
-        """
-        cur.execute(employees_query)
-        employees = cur.fetchall()
-        
-        # Fetch all PTO requests using a simple SQL query
+        # Fetch all PTO requests with employee information joined
         pto_query = """
-            SELECT employee_id, start_date, end_date
-            FROM "UKG"."Requests"
-            WHERE status = 'pending' OR status = 'approved';
+            SELECT 
+                e."Employee_ID",
+                e."First_Name",
+                e."Last_Name",
+                r.start_date,
+                r.end_date,
+                r.reason,
+                r.status
+            FROM "UKG"."Requests" r
+            JOIN "UKG"."Employee" e ON r.employee_id = e."Employee_ID"
+            WHERE r.status = 'pending' OR r.status = 'approved'
+            ORDER BY e."Employee_ID", r.start_date;
         """
         cur.execute(pto_query)
-        pto_requests_list = cur.fetchall()
-        
-        # Build schedule data using a dictionary variable
-        # The for loop will go through each employee and add them to the newly created schedule_data dictionary object.
-        schedule_data = {}
-        for emp in employees:
-            schedule_data[emp['Employee_ID']] = {
-                'name': f"{emp['First_Name']} {emp['Last_Name']}",
-                'pto_dates': []
-            }
-        
-        # Add the PTO dates to employees in the schedule-data dictionary object.
-        # Simple for loop that will go through each pto request and then add the dates to the corresponding employee in the schedule_data dictionary.
-        for pto in pto_requests_list:
-            emp_id_pto = pto['employee_id']
-            start = datetime.strptime(str(pto['start_date']), '%Y-%m-%d')
-            end = datetime.strptime(str(pto['end_date']), '%Y-%m-%d')
-        # A while loop that goes through each date in the PTO range then adds it to the employee's PTO dates list.
-            current_date = start
-            while current_date <= end:
-                schedule_data[emp_id_pto]['pto_dates'].append(current_date.strftime('%Y-%m-%d'))
-                current_date += timedelta(days=1)
-        
-        # Generate JSON backup and store in RDS
-        backup_json = json.dumps(schedule_data, indent=2, default=str)
-        # The SQL query we want to execute in order to backup the schedule data.
-        backup_query = """
-            INSERT INTO "UKG"."Backup_Storage" (backup_type, backup_data)
-            VALUES ('schedule', %s);
-        """
-        # We execute the backup query using the cursor and passing in the correct variables.
-        cur.execute(backup_query, (json.dumps(schedule_data),))
-        conn.commit()
+        pto_requests = cur.fetchall()
         
         cur.close()
         conn.close()
         
-        # Return the schedule data as JSON download for the user's convenience and storage.
-        output = io.BytesIO()
-        output.write(backup_json.encode())
+        # Create CSV file in memory (probably wouldn't be good in production but works for now with small databases)
+        output = io.StringIO()
+        csv_writer = csv.writer(output)
+        
+        # Write header row (writing a proper header for the CSV file)
+        csv_writer.writerow(['Employee ID', 'Employee Name', 'Start Date', 'End Date', 'Reason', 'Status'])
+        
+        # Write each PTO request as a row
+        for req in pto_requests:
+            employee_name = f"{req['First_Name']} {req['Last_Name']}"
+            csv_writer.writerow([
+                req['Employee_ID'],
+                employee_name,
+                req['start_date'],
+                req['end_date'],
+                req['reason'] or 'N/A',
+                req['status'].capitalize()
+            ])
+        
+        # Convert StringIO to BytesIO for sending
         output.seek(0)
-        # We use the send_file function that sends the JSON file to the user.
-        return send_file(output, mimetype='application/json', as_attachment=True, download_name='schedule.json')
-        # Simple error catch statement.
+        bytes_output = io.BytesIO()
+        bytes_output.write(output.getvalue().encode('utf-8'))
+        bytes_output.seek(0)
+        
+        # Return the CSV file as a downloadable file for the user
+        return send_file(
+            bytes_output,
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name='pto_schedule.csv'
+        )
     except Exception as e:
+        import traceback
         app.logger.error(f"Error generating schedule: {e}")
-        flash('Error generating schedule.', 'error')
+        app.logger.error(traceback.format_exc())
+        flash(f'Error generating schedule: {str(e)}', 'error')
         return redirect(url_for('pto'))
 
 # Finally, we make sure to have a logout route made so employees can securely exit their PTO page session.
