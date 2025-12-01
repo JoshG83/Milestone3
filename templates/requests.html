@@ -152,10 +152,8 @@
         <div class="employee-info">
             <p><strong>Employee:</strong> {{ employee_name }}</p>
         </div>
-<!-- Displays any success or error messages that may have occurred on the webpage -->
-        {% if success %}
+
         {% if requests %}
-<!-- Builds the table that will display all of the PTO requests that the employee has made -->
         <table class="requests-table">
             <thead>
                 <tr>
@@ -185,7 +183,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <!-- If there are no PTO requests, the website displaysa message and a button to submit the first request -->
+        <!-- If there are no PTO requests, the website displays a message and a button to submit the first request -->
         {% else %}
         <div class="no-requests">
             <p>You have not submitted any PTO requests yet.</p>

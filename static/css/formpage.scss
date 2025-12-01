@@ -236,28 +236,46 @@ textarea {
   resize: vertical;
 }
 
-/* Remove browser placeholder like 'mm/dd/yyyy' but keeps entered date visible.
-   This Works by making the date input text color transparent when empty, and restoring
-   color when the field is focused or valid (we keep Start/End date required in the form). */
+// Date input styling - hide placeholder but show entered dates
 input[type="date"] {
-  color: transparent;
+  color: $white;
+  
+  &:invalid,
+  &:not(:focus):not(:valid) {
+    color: transparent;
+  }
+  
+  &:focus,
+  &:valid {
+    color: $white;
+  }
 }
 
-/* WebKit-specific date-edit parts */
-input[type="date"]::-webkit-datetime-edit,
+// WebKit-specific date-edit parts - hide placeholder, show entered text
 input[type="date"]::-webkit-datetime-edit-text,
 input[type="date"]::-webkit-datetime-edit-month-field,
 input[type="date"]::-webkit-datetime-edit-day-field,
 input[type="date"]::-webkit-datetime-edit-year-field {
-  color: transparent;
+  color: rgba(255, 255, 255, 0);
 }
 
-/* Restore visible color when focused or when the field has a valid value */
-input[type="date"]:focus,
-input[type="date"]:valid {
+input[type="date"]:focus::-webkit-datetime-edit-text,
+input[type="date"]:focus::-webkit-datetime-edit-month-field,
+input[type="date"]:focus::-webkit-datetime-edit-day-field,
+input[type="date"]:focus::-webkit-datetime-edit-year-field,
+input[type="date"]:valid::-webkit-datetime-edit-text,
+input[type="date"]:valid::-webkit-datetime-edit-month-field,
+input[type="date"]:valid::-webkit-datetime-edit-day-field,
+input[type="date"]:valid::-webkit-datetime-edit-year-field {
   color: $white;
 }
-/* WebKit-specific date-edit parts when focused or valid */
+
+// Style the calendar picker icon to be visible on dark background
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
 .field-wrap {
   position: relative;
   margin-bottom: 40px;
