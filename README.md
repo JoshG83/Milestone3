@@ -126,6 +126,7 @@ Milestone3/
 │   └── js/
 │       └── formpage.js            # Client-side logic
 ├── templates/
+|   ├── base.html                  # Universal formatting for all .html pages
 │   ├── index.html                 # Sign-in page
 │   ├── pto.html                   # PTO form
 │   └── requests.html              # View requests
