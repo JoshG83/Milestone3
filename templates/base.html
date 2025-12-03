@@ -1,0 +1,44 @@
+<!-- We are defining the structure of our HTML page for the UKG Enhanced Scheduling System.
+     Ideally, we want the structure to be very simple and easy for both the employees and managers to navigate.
+     In this base template, we define the shared HTML headers, loader, styles, and scripts. -->
+<!-- Later decided to make a base.html template for using things such as CSS loaders and templates
+     to improve the overall look and feel of the sight from the users perspective.-->
+     
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic metadata for all pages -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <title>{% block title %}Schedule System{% endblock %}</title>
+
+  <!-- Google Fonts - Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Link to the external CSS stylesheet for styling all pages in the Enhanced Scheduling System -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/formpage.css') }}">
+
+  {% block extra_head %}
+  {% endblock %}
+</head>
+<body>
+
+  <!-- Main content container for each page that extends this base template -->
+  <div class="page-content" id="page-content">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <!-- jQuery is required by the included formpage.js in order for our webpage to function properly. -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJ+Y3bZ6k2m7rKkQ5c5o2Q5c5o2Q5c5o2Q5c="
+          crossorigin="anonymous"></script>
+  <script src="{{ url_for('static', filename='js/formpage.js') }}"></script>
+
+  {% block extra_scripts %}
+  {% endblock %}
+</body>
+</html>

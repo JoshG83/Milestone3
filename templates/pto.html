@@ -1,32 +1,34 @@
+{% extends "base.html" %}
+
 <!-- Link to the external CSS stylesheet for styling the PTO request form the users will see -->
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/formpage.css') }}">
-<!-- Boiler-plate HTML code to start the webpage, including headers and linking the stylesheet -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PTO Request</title>
-  <link rel="stylesheet" href="/static/css/formpage.css" />
-</head>
-<body>
+{% block title %}PTO Request{% endblock %}
+
+{% block content %}
 <!-- Main form container for the PTO request form -->
 <div class="form">
   <h1>PTO Request</h1>
   <!-- Display the signed-in employee's name and navigation links to various pages -->
-  <p>Signed in as: <strong class="employee-name">{{ employee_name }}</strong> 
-  (<a href="{{ url_for('view_requests') }}">View Your Requests</a> | 
-   <a href="{{ url_for('generate_schedule') }}">Download Schedule</a> |
-   <a href="{{ url_for('logout') }}">Sign out</a>)</p>
-<!-- Display error or success messages if they exist -->
+  <p>
+    Signed in as: <strong class="employee-name">{{ employee_name }}</strong> 
+    (<a href="{{ url_for('view_requests') }}">View Your Requests</a> | 
+     <a href="{{ url_for('generate_schedule') }}">Download Schedule</a> |
+     <a href="{{ url_for('logout') }}">Sign out</a>)
+  </p>
+
+  <!-- Display error or success messages if they exist -->
   {% if error %}
-    <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">{{ error }}</p>
+    <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">
+      {{ error }}
+    </p>
   {% endif %}
   {% if success %}
-    <p style="color:#ddffdd; background:#116611; padding:8px; border-radius:4px;">{{ success }}</p>
+    <p style="color:#ddffdd; background:#116611; padding:8px; border-radius:4px;">
+      {{ success }}
+    </p>
   {% endif %}
-<!-- PTO request form with fields for start date, end date, and reason for the request to make a complete form -->
+
+  <!-- PTO request form with fields for start date, end date, and reason for the request to make a complete form -->
   <form method="post" action="{{ url_for('pto') }}">
     <div class="field-wrap">
       <label>Start Date</label>
@@ -45,7 +47,4 @@
 
   <!-- Again we wrap up by calling jQuery and our custom JavaScript file for form functionality -->
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/static/js/formpage.js"></script>
-</body>
-</html>
+{% endblock %}

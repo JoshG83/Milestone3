@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
+  // Trigger shake animation if there's an error message on the page
+  const errorMessages = document.querySelectorAll('[style*="#661111"], [style*="#f8d7da"]');
+  if (errorMessages.length > 0) {
+    const form = document.querySelector('.form, .requests-container');
+    if (form) {
+      form.classList.add('shake');
+      // Remove the class after animation completes so it can be triggered again
+      setTimeout(() => form.classList.remove('shake'), 500);
+    }
+  }
+  
   // Floating label behavior (include textarea)
   const inputs = document.querySelectorAll('.field-wrap input, .field-wrap textarea');
   // Initialize labels for pre-filled fields

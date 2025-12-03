@@ -1,57 +1,46 @@
-<!--/* We are defining the structure of our HTML page for the UKG Enhanced Scheduling System.
-/* Ideally, we want the structure to be very simple and easy for both the employees and managers to navigate.
-/* In this first section, we begin with rudamentary HTML headers to begin our webpage.-->
+{% extends "base.html" %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/formpage.css') }}">
+<!-- We are defining the structure of our HTML page for the UKG Enhanced Scheduling System.
+     Ideally, we want the structure to be very simple and easy for both the employees and managers to navigate.
+     In this first section, we begin with rudamentary HTML headers to begin our webpage.-->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Schedule System</title>
-  <link rel="stylesheet" href="/static/css/formpage.css" />
-</head>
-<body>
+{% block title %}Schedule System{% endblock %}
 
+{% block content %}
 <!-- The main form container that can hold our form elements -->
 <div class="form">
       
-      <!-- Tab content container which is necessary for our interface -->
-      <div class="tab-content">
-        <div id="signup">   
-          <h1>UKG Enhanced Scheduling System</h1>
-          {% if error %}
-          <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">{{ error }}</p>
-          {% endif %}
+  <!-- Tab content container which is necessary for our interface -->
+  <div class="tab-content">
+    <div id="signup">   
+      <h1>UKG Enhanced Scheduling System</h1>
 
-          <form action="/" method="post">
-<!-- Employee ID input field with validation for only numerical inputs -->
-          <div class="field-wrap">
-            <label>
-              Employee ID<span class="req">*</span>
-            </label>
-              <input id="employee_id"
-                     name="employee_id" 
-                     type="text" 
-                     inputmode="numeric"
-                     pattern="\d*"
-                     class="employee-id-input" 
-                     required />
-          </div>
-<!-- Password input field and sign in button -->
-          <button type="submit" class="button button-block">Sign In</button>
+      {% if error %}
+        <p style="color:#ffdddd; background:#661111; padding:8px; border-radius:4px;">
+          {{ error }}
+        </p>
+      {% endif %}
 
-          </form>
-
+      <form action="/" method="post">
+        <!-- Employee ID input field with validation for only numerical inputs -->
+        <div class="field-wrap">
+          <label>
+            Employee ID<span class="req">*</span>
+          </label>
+          <input id="employee_id"
+                 name="employee_id" 
+                 type="text" 
+                 inputmode="numeric"
+                 pattern="\d*"
+                 class="employee-id-input" 
+                 required />
         </div>
-        
-      </div><!-- tab-content -->
+        <!-- Password input field and sign in button -->
+        <button type="submit" class="button button-block">Sign In</button>
+      </form>
+
+    </div>
+  </div><!-- tab-content -->
       
 </div> <!-- /form -->
-
-<!-- jQuery is required by the included formpage.js in order for our webpage to function properly. -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJ+Y3bZ6k2m7rKkQ5c5o2Q5c5o2Q5c5o2Q5c=" crossorigin="anonymous"></script>
-<script src="/static/js/formpage.js"></script>
-</body>
-</html>
+{% endblock %}
