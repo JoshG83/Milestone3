@@ -35,8 +35,8 @@ html {
 }
 /* Body styling: background color and font family of the webpage */
 body {
-  background: $body-bg;
-  font-family: "Titillium Web", sans-serif;
+  background: linear-gradient(to right, #2dd4bf, #1f2937);
+  font-family: "Inter", sans-serif;
 }
 /* Anchor link styling: remove underline, set color to main accent color defined at the beginning, and add hover effect */
 a {
@@ -320,6 +320,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background: $main-dark;
   }
 }
+  
 /* Full-width button styling: it makes the button take up the full width of its container */
 .button-block {
   display: block;
@@ -335,4 +336,31 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 .employee-id-input {
   color: #ffffff;
   -webkit-text-fill-color: #ffffff !important; // handle autofill
+}
+
+/*  
+   Page fade-in animation
+   Creates a smooth fade-in effect when pages load
+   Made with the help of external resources online such as https://github.com/bradtraversy/design-resources-for-developers
+   and https://css-loaders.com/
+*/
+
+.page-content {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Shake animation for form errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.form.shake {
+  animation: shake 0.5s ease-in-out;
 }

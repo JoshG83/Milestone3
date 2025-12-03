@@ -1,14 +1,13 @@
+{% extends "base.html" %}
+
 <!-- We create a page that will display all of the PTO requests that the employee has made using the website
      The First six lines or so contain the basic code every HTML page needs to function and display text properly. -->
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your PTO Requests</title>
+{% block title %}Your PTO Requests{% endblock %}
+
+{% block extra_head %}
     <!-- Simple stylesheet link that allows our website to be styled consistently with CSS -->
-    <link rel="stylesheet" href="/static/css/formpage.css">
+    <!-- The main stylesheet link is defined in base.html; below we define page-specific styles. -->
     <style>
         .requests-container {
             max-width: 1000px; /* Maximum width of the requests container */
@@ -136,8 +135,9 @@
         }
     </style>
 <!-- Builds the top section page for the PTO requests. -->
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
     <div class="requests-container">
         <div class="requests-header">
             <!-- The title of the page in header format and three buttons -->
@@ -148,7 +148,7 @@
                 <a href="/logout" class="btn btn-secondary">Sign Out</a>
             </div>
         </div>
-<!-- Displays the employees name at the top of the page -->
+        <!-- Displays the employees name at the top of the page -->
         <div class="employee-info">
             <p><strong>Employee:</strong> {{ employee_name }}</p>
         </div>
@@ -191,5 +191,4 @@
         </div>
         {% endif %}
     </div>
-</body>
-</html>
+{% endblock %}
