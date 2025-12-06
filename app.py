@@ -487,12 +487,16 @@ def generate_schedule():
         bytes_output.write(output.getvalue().encode('utf-8'))
         bytes_output.seek(0)
         
+        # Get employee name for the filename which makes it very clear who's requests are being viewed.
+        employee_name = session.get('employee_name', 'Employee')
+        filename = f'{employee_name} Requests.csv'
+        
         # Return the CSV file as a downloadable file for the user
         return send_file(
             bytes_output,
             mimetype='text/csv',
             as_attachment=True,
-            download_name='pto_schedule.csv'
+            download_name=filename
         )
     except Exception as e:
         import traceback
