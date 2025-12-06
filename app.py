@@ -275,6 +275,28 @@ def pto():
             error = 'Please provide both start and end dates.'
             return render_template('pto.html', employee_name=employee_name, error=error)
         
+        # This code block is going to ensure that PTO requests submitted are legitimate and at least 1 day ahead of the system time/date.
+        # This prevents bad data from being entered and stored into the EC2 server and also the AWS RDS.
+        # The try statement achieves just that, defining clear start and end dates, as well as today and tomorrow variables using system time.
+        # The rest are simple if statements that check if the start date is at the very least one day ahead of when the report is being submitted.
+        # If not, the user will be presented an error and must enter valid dates.
+        try:
+            start_date = datetime.strptime(start, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end, '%Y-%m-%d').date()
+            today = datetime.now().date()
+            tomorrow = today + timedelta(days=1)
+            
+            if start_date < tomorrow:
+                error = 'PTO requests must be submitted at least 1 day in advance. Please select a start date no earlier than tomorrow.'
+                return render_template('pto.html', employee_name=employee_name, error=error)
+            
+            if end_date < start_date:
+                error = 'End date cannot be before start date.'
+                return render_template('pto.html', employee_name=employee_name, error=error)
+        except ValueError:
+            error = 'Invalid date format. Please use the date picker.'
+            return render_template('pto.html', employee_name=employee_name, error=error)
+        
         # Insert PTO request into RDS database
         try:
             conn = AWS_connection()
