@@ -339,10 +339,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   -webkit-text-fill-color: #ffffff !important;
 }
 
-/* ------------------------------------------------------------------
+/*  
    Page fade-in animation
    Creates a smooth fade-in effect when pages load
-   ------------------------------------------------------------------ */
+   Made with the help of external resources online such as https://github.com/bradtraversy/design-resources-for-developers
+   and https://css-loaders.com/
+*/
 .page-content {
   animation: fadeIn 0.4s ease-in;
 }
