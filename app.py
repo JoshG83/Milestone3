@@ -68,7 +68,45 @@ def send_email(recipient_email, employee_name, start_date, end_date):
     """Send a confirmation email to the employee after PTO request submission."""
     try:
         subject = "PTO Request Confirmation"
-        body = f"""
+        
+        # HTML email body with styled header (using text-based logo for reliability).
+        # This HTML code will help form our email to employees regarding their request.
+        # Makes a neat looking request confimation email for the users safekeeping.
+        # Had to use a text-based logo because image hosting was causing some issues when emails were sent.
+        html_body = f"""
+        <html>
+            <body style="font-family: Inter, Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+                <div style="background: linear-gradient(to right, #2dd4bf, #1f2937); padding: 30px; text-align: center; margin-bottom: 30px; border-radius: 8px;">
+                    <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">UKG</h1>
+                    <p style="color: #e5e7eb; margin: 5px 0 0 0; font-size: 14px; letter-spacing: 1px;">ENHANCED SCHEDULING SYSTEM</p>
+                </div>
+                <div style="padding: 0 20px;">
+                    <p style="font-size: 16px;">Dear {employee_name},</p>
+                    <p style="font-size: 16px;">Your PTO request has been successfully submitted.</p>
+                    <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                        <p style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">Request Details:</p>
+                        <ul style="list-style-type: none; padding-left: 0; margin: 0;">
+                            <li style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                <strong>Start Date:</strong> {start_date}
+                            </li>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                <strong>End Date:</strong> {end_date}
+                            </li>
+                            <li style="padding: 8px 0;">
+                                <strong>Status:</strong> <span style="background: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 14px;">Pending</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <p style="font-size: 16px;">You can view all your PTO requests by logging into your account at 
+                       <a href="http://schedulingsystem.xyz" style="color: #1ab188; text-decoration: none;">schedulingsystem.xyz</a>.</p>
+                    <p style="font-size: 16px; margin-top: 30px;">Best regards,<br><strong>UKG Enhanced Scheduling System</strong></p>
+                </div>
+            </body>
+        </html>
+        """
+        
+        # Plain text fallback for email clients that don't support HTML
+        text_body = f"""
 Dear {employee_name},
 
 Your PTO request has been successfully submitted.
@@ -85,11 +123,14 @@ UKG Enhanced Scheduling System
         """
         # We reference the SMTP library here to send out the email using variables defined earlier.
 
-        msg = MIMEMultipart()
+        msg = MIMEMultipart('alternative')
         msg['From'] = SENDER_EMAIL
         msg['To'] = recipient_email
         msg['Subject'] = subject
-        msg.attach(MIMEText(body, 'plain'))
+        
+        # Attach both plain text and HTML versions
+        msg.attach(MIMEText(text_body, 'plain'))
+        msg.attach(MIMEText(html_body, 'html'))
 
         # This section is where the sendoff of the email occurs utilizing SMTP.
         
