@@ -440,7 +440,8 @@ def generate_schedule():
         conn = AWS_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Fetch all PTO requests with employee information joined
+        # Fetch only the current user's PTO requests
+        # This helps greatly with data privacy and ensures that every user can see only their submitted requests.
         pto_query = """
             SELECT 
                 e."Employee_ID",
@@ -452,10 +453,10 @@ def generate_schedule():
                 r.status
             FROM "UKG"."Requests" r
             JOIN "UKG"."Employee" e ON r.employee_id = e."Employee_ID"
-            WHERE r.status = 'pending' OR r.status = 'approved'
-            ORDER BY e."Employee_ID", r.start_date;
+            WHERE r.employee_id = %s
+            ORDER BY r.start_date DESC;
         """
-        cur.execute(pto_query)
+        cur.execute(pto_query, (emp_id,))
         pto_requests = cur.fetchall()
         
         cur.close()
